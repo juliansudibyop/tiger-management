@@ -2,11 +2,11 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { Table, Thead, Tbody, Tr, Th, Td, TableCaption, Button, useToast } from '@chakra-ui/react';
 import { db } from '../config/firebase-config';
-import PesilatDataServices from '../services/pesilat-service';
+import KontingenDataServices from '../services/kontingen-service';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 
-const Pesilat = ({ getPesilatId }) => {
-  const [pesilat, setPesilat] = useState([]);
+const Kontingen = ({ getKontingenId }) => {
+  const [kontingen, setKontingen] = useState([]);
   const toast = useToast();
 
   // const tampilPesilat = async (e) => {
@@ -16,15 +16,15 @@ const Pesilat = ({ getPesilatId }) => {
 
   const handleHapus = async (id) => {
     try {
-      await PesilatDataServices.hapusPesilat(id);
+      await KontingenDataServices.hapusKontingen(id);
       toast({
-        title: `Data Pesilat Berhasil Dihapus`,
+        title: `Data Kontingen Berhasil Dihapus`,
         status: 'success',
         position: 'top-right',
       });
     } catch (err) {
       toast({
-        title: `Data Pesilat Gagal Dihapus`,
+        title: `Data Kontingen Gagal Dihapus`,
         status: 'error',
         position: 'top-right',
       });
@@ -32,40 +32,36 @@ const Pesilat = ({ getPesilatId }) => {
   };
 
   useEffect(() => {
-    const q = query(collection(db, 'tb-pesilat'));
-    const tampilPesilatRealtime = onSnapshot(q, (querySnapshot) => {
-      let pesilatArray = [];
+    const q = query(collection(db, 'tb-kontingen'));
+    const tampilKontingenRealtime = onSnapshot(q, (querySnapshot) => {
+      let kontingenArray = [];
       querySnapshot.forEach((doc) => {
-        pesilatArray.push({ ...doc.data(), id: doc.id });
+        kontingenArray.push({ ...doc.data(), id: doc.id });
       });
-      setPesilat(pesilatArray);
+      setKontingen(kontingenArray);
     });
-    return () => tampilPesilatRealtime();
+    return () => tampilKontingenRealtime();
   }, []);
   return (
     <Table variant="striped" border="1px" borderColor="gray.200">
-      <TableCaption placement="top">Table Pesilat</TableCaption>
+      <TableCaption placement="top">Table Kontingen</TableCaption>
       <Thead>
         <Tr>
           <Th>No</Th>
-          <Th>Nama Pesilat</Th>
-          <Th>Tingkat</Th>
-          <Th>Kategori</Th>
+          <Th>Nama Kontingen</Th>
           <Th>Action</Th>
         </Tr>
       </Thead>
       <Tbody>
-        {pesilat.map((pslt, index) => (
-          <Tr key={pslt.id}>
+        {kontingen.map((ktng, index) => (
+          <Tr key={ktng.id}>
             <Td w="5%">{index + 1}</Td>
-            <Td>{pslt.nama}</Td>
-            <Td>{pslt.tingkat}</Td>
-            <Td>{pslt.kategori}</Td>
+            <Td>{ktng.nama}</Td>
             <Td>
-              <Button size="xs" colorScheme="red" onClick={() => handleHapus(pslt.id)}>
+              <Button size="xs" colorScheme="red" onClick={() => handleHapus(ktng.id)}>
                 Delete
               </Button>
-              <Button size="xs" ml={2} colorScheme="green" onClick={() => getPesilatId(pslt.id)}>
+              <Button size="xs" ml={2} colorScheme="green" onClick={() => getKontingenId(ktng.id)}>
                 Edit
               </Button>
             </Td>
@@ -76,4 +72,4 @@ const Pesilat = ({ getPesilatId }) => {
   );
 };
 
-export default Pesilat;
+export default Kontingen;

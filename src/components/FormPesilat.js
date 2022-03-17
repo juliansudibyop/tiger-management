@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { FormControl, FormLabel, Input, Select, Button, useToast } from '@chakra-ui/react';
 import PesilatDataServices from '../services/pesilat-service';
-const FormPesilat = () => {
+const FormPesilat = ({ id, setPesilatId }) => {
   const [nama, setNama] = useState('');
   const [tingkat, setTingkat] = useState('SD');
   const [kategori, setKategori] = useState('Perorangan');
@@ -17,13 +17,24 @@ const FormPesilat = () => {
       kategori,
     };
     try {
-      await PesilatDataServices.tambahPesilat(newPesilat);
-      setNama('');
-      toast({
-        title: `Data Pesilat Berhasil Disimpan`,
-        status: 'success',
-        position: 'top-right',
-      });
+      if (id !== undefined && id !== '') {
+        await PesilatDataServices.updatePesilat(id, newPesilat);
+        setNama('');
+        setPesilatId('');
+        toast({
+          title: `Data Pesilat Berhasil Diupdate`,
+          status: 'success',
+          position: 'top-right',
+        });
+      } else {
+        await PesilatDataServices.tambahPesilat(newPesilat);
+        setNama('');
+        toast({
+          title: `Data Pesilat Berhasil Disimpan`,
+          status: 'success',
+          position: 'top-right',
+        });
+      }
     } catch (err) {
       toast({
         title: `Data Pesilat Gagal Disimpan`,
@@ -32,6 +43,20 @@ const FormPesilat = () => {
       });
     }
   };
+
+  useEffect(() => {
+    const handleEdit = async () => {
+      try {
+        const tampilPesilat = await PesilatDataServices.tampilPesilatById(id);
+        setNama(tampilPesilat.data().nama);
+        setTingkat(tampilPesilat.data().tingkat);
+        setKategori(tampilPesilat.data().kategori);
+      } catch (err) {}
+    };
+    if (id !== undefined && id !== '') {
+      handleEdit();
+    }
+  }, [id]);
   return (
     <FormControl>
       <FormLabel>Nama Pesilat</FormLabel>
@@ -50,9 +75,6 @@ const FormPesilat = () => {
       </Select>
       <Button mt={2} colorScheme="blue" onClick={handleSubmit}>
         Simpan
-      </Button>
-      <Button mt={2} colorScheme="blue">
-        Edit
       </Button>
     </FormControl>
   );

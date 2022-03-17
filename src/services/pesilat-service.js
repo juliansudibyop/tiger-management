@@ -1,5 +1,5 @@
 import { db } from '../config/firebase-config';
-import { collection, doc, getDocs, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 const pesilatCollectionRef = collection(db, 'tb-pesilat');
 class PesilatDataServices {
@@ -23,7 +23,7 @@ class PesilatDataServices {
 
   tampilPesilatById = (id) => {
     const pesilatDoc = doc(db, 'tb-pesilat', id);
-    return getDocs(pesilatDoc);
+    return getDoc(pesilatDoc);
   };
 }
 
